@@ -51,8 +51,14 @@ class QuizStart extends Component {
   }
 
   createStateObject = (prevState, questions) => ({
-    question: questions[prevState.nextQuestionId].question,
-    answer: questions[prevState.nextQuestionId].answer,
+    question:
+      prevState.nextQuestionId === -1
+        ? questions[0].question
+        : questions[prevState.nextQuestionId].question,
+    answer:
+      prevState.nextQuestionId === -1
+        ? questions[0].answer
+        : questions[prevState.nextQuestionId].answer,
     nextQuestionId:
       prevState.nextQuestionId + 1 === questions.length
         ? -1
@@ -63,9 +69,7 @@ class QuizStart extends Component {
   initializeStateWithQuestion = () => {
     const questions = this.props.questions;
     this.setState((prevState) => ({
-      question: questions[0].question,
-      answer: questions[0].answer,
-      nextQuestionId: prevState.nextQuestionId + 1,
+      ...this.createStateObject(prevState, questions),
       answeredQuestions: 0,
       remainingQuestionsNumber: questions.length,
     }));
@@ -87,8 +91,7 @@ class QuizStart extends Component {
         <View style={styles.scoreContainer}>
           <Text style={styles.score}>Congratulations: You have finished</Text>
           <Text style={styles.score}>
-            Your score:
-            {((answeredQuestions / questions.length) * 100).toFixed(0)} %
+            Your have answered : {answeredQuestions} of {questions.length}
           </Text>
 
           <SubmitBtn
@@ -137,18 +140,20 @@ class QuizStart extends Component {
           onPress={() => _card.flip()}
         ></TextButton>
 
-        <SubmitBtn
-          onPress={() => this.answerQuestion(questions, AnswerType.CORRECT)}
-          buttonName="Correct"
-          buttonStyle={styles.correctButton}
-          buttonTextStyle={styles.textButton}
-        />
-        <SubmitBtn
-          onPress={() => this.answerQuestion(questions, AnswerType.INCORRECT)}
-          buttonName="Incorrect"
-          buttonStyle={styles.incorrectButton}
-          buttonTextStyle={styles.textButton}
-        />
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <SubmitBtn
+            onPress={() => this.answerQuestion(questions, AnswerType.CORRECT)}
+            buttonName="Correct"
+            buttonStyle={styles.correctButton}
+            buttonTextStyle={styles.textButton}
+          />
+          <SubmitBtn
+            onPress={() => this.answerQuestion(questions, AnswerType.INCORRECT)}
+            buttonName="Incorrect"
+            buttonStyle={styles.incorrectButton}
+            buttonTextStyle={styles.textButton}
+          />
+        </View>
       </View>
     );
   }
@@ -240,8 +245,9 @@ const styles = StyleSheet.create({
   },
   questionNumber: {
     fontSize: 22,
+    color: purple,
     fontWeight: "bold",
-    marginLeft: 10,
+    alignSelf: "center",
     marginTop: 10,
   },
   answerText: {
