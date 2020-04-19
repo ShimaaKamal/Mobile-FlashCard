@@ -6,9 +6,11 @@ export default function SubmitBtn({
   buttonName,
   buttonStyle,
   buttonTextStyle,
+  disabled
 }) {
+  disabled = disabled ? disabled : false
   return (
-    <TouchableOpacity style={buttonStyle} onPress={onPress}>
+    <TouchableOpacity style={[buttonStyle, disabled && { opacity: 0.5 }]} onPress={onPress} disabled={disabled}>
       <Text style={buttonTextStyle}>{buttonName}</Text>
     </TouchableOpacity>
   );

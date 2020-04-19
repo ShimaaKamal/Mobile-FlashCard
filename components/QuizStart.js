@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import CardFlip from "react-native-card-flip";
-import { lightPurp, pink } from "../utils/colors";
+import { lightPurp, pink, purple, white } from "../utils/colors";
 import { Text, StyleSheet, TouchableOpacity, View } from "react-native";
 import { connect } from "react-redux";
 import SubmitBtn from "./SubmitButton";
-import { purple, white } from "../utils/colors";
+import { Dimensions } from "react-native";
+import TextButton from "./TextButton";
+import { AnswerType } from "../utils/helpers";
 
 class QuizStart extends Component {
   state = {
@@ -12,20 +14,25 @@ class QuizStart extends Component {
     answer: "",
     remainingQuestionsNumber: 0,
     nextQuestionId: 0,
-    answerderQuestions: 0,
+    answeredQuestions: 0,
   };
-  submit = () => {
-    const questions = this.props.questions;
+
+  answerQuestion = (questions, answerType) => {
     if (this.state.nextQuestionId === -1) {
       this.setState((prevState) => ({
-        answerderQuestions: prevState.answerderQuestions + 1,
+        answeredQuestions:
+          answerType === AnswerType.CORRECT
+            ? prevState.answeredQuestions + 1
+            : prevState.answeredQuestions,
         remainingQuestionsNumber: prevState.remainingQuestionsNumber - 1,
       }));
     } else {
       this.setState((prevState) => ({
         ...this.createStateObject(prevState, questions),
         remainingQuestionsNumber: prevState.remainingQuestionsNumber - 1,
-        answerderQuestions: prevState.answerderQuestions + 1,
+        answeredQuestions: AnswerType.CORRECT
+          ? prevState.answeredQuestions + 1
+          : prevState.answeredQuestions,
       }));
     }
   };
@@ -52,45 +59,66 @@ class QuizStart extends Component {
   };
 
   render() {
-    const { question, answer, remainingQuestionsNumber } = this.state;
+    const {
+      question,
+      answer,
+      nextQuestionId,
+      remainingQuestionsNumber,
+      answerderQuestions,
+    } = this.state;
+    const { questions } = this.props;
 
-    console.log("this.state.newQuestionId", this.state.newQuestionId);
-    if (
-      this.state.nextQuestionId === -1 &&
-      this.state.remainingQuestionsNumber == -1
-    ) {
-      return <Text>Congratulations: You have finished</Text>;
+    if (nextQuestionId === -1 && remainingQuestionsNumber === -1) {
+      return (
+        <View style={styles.scoreContainer}>
+          <Text style={styles.score}>Congratulations: You have finished</Text>
+          <Text style={styles.score}>
+            Your score:{" "}
+            {((answerderQuestions / questions.length) * 100).toFixed(2)} %
+          </Text>
+        </View>
+      );
     }
+    let _card;
     return (
       <View style={styles.container}>
-        <Text>{remainingQuestionsNumber}</Text>
+        <Text style={styles.questionNumber}>
+          {remainingQuestionsNumber + 1} / {questions.length}
+        </Text>
         <CardFlip
           style={styles.cardContainer}
-          ref={(card) => (this.card = card)}
+          ref={(card) => {
+            _card = card;
+          }}
         >
           <TouchableOpacity
             style={styles.flipCard}
-            onPress={() => this.card.flip()}
+            onPress={() => _card.flip()}
           >
-            <Text>{question}</Text>
+            <Text style={styles.flipText}>{question}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.flipCardBack}
-            onPress={() => this.card.flip()}
+            onPress={() => _card.flip()}
           >
-            <Text>{answer}</Text>
+            <Text style={styles.flipText}>{answer}</Text>
           </TouchableOpacity>
         </CardFlip>
+        <TextButton
+          style={styles.answerText}
+          children="Answer"
+          onPress={() => _card.flip()}
+        ></TextButton>
 
         <SubmitBtn
-          onPress={() => this.submit()}
+          onPress={() => this.answerQuestion(questions, AnswerType.CORRECT)}
           buttonName="Correct"
           buttonStyle={styles.correctButton}
           buttonTextStyle={styles.textButton}
         />
         <SubmitBtn
-          onPress={() => this.submit()}
+          onPress={() => this.answerQuestion(questions, AnswerType.INCORRECT)}
           buttonName="Incorrect"
           buttonStyle={styles.incorrectButton}
           buttonTextStyle={styles.textButton}
@@ -101,8 +129,6 @@ class QuizStart extends Component {
 }
 function mapStateToProps(state, props) {
   const title = props.route.params.title;
-  console.log("title", title);
-  console.log("questions", state[title].questions);
   return {
     questions: state[title].questions,
   };
@@ -124,7 +150,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     fontSize: 20,
-    width: 300,
+    width: Dimensions.get("window").width - 30,
   },
   flipCardBack: {
     backgroundColor: pink,
@@ -133,12 +159,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     fontSize: 20,
-    width: 300,
+    width: Dimensions.get("window").width - 30,
   },
   flipText: {
-    width: 90,
+    color: white,
     fontSize: 20,
-    color: "white",
     fontWeight: "bold",
   },
   correctButton: {
@@ -167,5 +192,27 @@ const styles = StyleSheet.create({
     color: white,
     fontSize: 22,
     textAlign: "center",
+  },
+  questionNumber: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginLeft: 10,
+    marginTop: 10,
+  },
+  answerText: {
+    fontSize: 22,
+    alignSelf: "center",
+    fontWeight: "bold",
+    color: purple,
+  },
+  scoreContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  score: {
+    margin: 10,
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });

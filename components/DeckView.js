@@ -33,6 +33,7 @@ class DeckView extends Component {
           <SubmitBtn
             onPress={() => this.startQuizNavigate(navigation, deck.title)}
             buttonName="Start Quiz"
+            disabled={!deck.questions}
             buttonStyle={styles.startQuizButton}
             buttonTextStyle={styles.startQuizTextButton}
           />
@@ -89,6 +90,7 @@ const styles = StyleSheet.create({
 });
 function mapStateToProps(state, props) {
   const title = props.route.params.title;
+  console.log("deck", state[title])
   return {
     deck: state[title],
   };

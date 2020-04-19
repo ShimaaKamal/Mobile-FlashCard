@@ -29,7 +29,6 @@ function DeckRow({ title, questions, navigation }) {
 class DecksList extends Component {
   componentDidMount() {
     getDecks().then((decks) => {
-      console.log(decks);
       this.props.dispatch(recieveDecks(decks));
     });
   }
