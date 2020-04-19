@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -11,6 +11,7 @@ import { Provider } from "react-redux";
 import decks from "./reducers/index";
 import AddCard from "./components/AddCard";
 import QuizStart from "./components/QuizStart";
+import { setLocalNotification } from "./utils/helpers";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -29,32 +30,37 @@ function deckStack() {
     </Stack.Navigator>
   );
 }
-export default function App() {
-  return (
-    <Provider store={createStore(decks)}>
-      <NavigationContainer>
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ color, size }) => {
-              let iconName;
+export default class App extends Component {
+  componentDidMount() {
+    setLocalNotification();
+  }
+  render() {
+    return (
+      <Provider store={createStore(decks)}>
+        <NavigationContainer>
+          <Tab.Navigator
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ color, size }) => {
+                let iconName;
 
-              switch (route.name) {
-                case "Decks":
-                  iconName = "md-journal";
-                  break;
-                case "Add Deck":
-                  iconName = "md-add-circle";
-                  break;
-              }
+                switch (route.name) {
+                  case "Decks":
+                    iconName = "md-journal";
+                    break;
+                  case "Add Deck":
+                    iconName = "md-add-circle";
+                    break;
+                }
 
-              return <Ionicons name={iconName} size={size} color={color} />;
-            },
-          })}
-        >
-          <Tab.Screen name="Decks" component={deckStack} />
-          <Tab.Screen name="Add Deck" component={AddDeck} />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </Provider>
-  );
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+            })}
+          >
+            <Tab.Screen name="Decks" component={deckStack} />
+            <Tab.Screen name="Add Deck" component={AddDeck} />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </Provider>
+    );
+  }
 }

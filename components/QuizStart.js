@@ -6,7 +6,11 @@ import { connect } from "react-redux";
 import SubmitBtn from "./SubmitButton";
 import { Dimensions } from "react-native";
 import TextButton from "./TextButton";
-import { AnswerType } from "../utils/helpers";
+import {
+  AnswerType,
+  clearLocalNotification,
+  setLocalNotification,
+} from "../utils/helpers";
 
 class QuizStart extends Component {
   state = {
@@ -35,11 +39,11 @@ class QuizStart extends Component {
             ? prevState.answeredQuestions + 1
             : prevState.answeredQuestions,
       }));
-      console.log(this.state.answeredQuestions);
     }
   };
 
   componentDidMount() {
+    clearLocalNotification().then(setLocalNotification());
     this.updateStateWithQuestion();
   }
 

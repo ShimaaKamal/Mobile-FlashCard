@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
 });
 function mapStateToProps(state, props) {
   const title = props.route.params.title;
-  console.log("deck", state[title])
   return {
     deck: state[title],
   };
