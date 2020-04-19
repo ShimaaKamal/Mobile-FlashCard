@@ -62,6 +62,8 @@ class QuizStart extends Component {
     nextQuestionId:
       prevState.nextQuestionId + 1 === questions.length
         ? -1
+        : prevState.nextQuestionId === -1
+        ? 1
         : prevState.nextQuestionId + 1,
   });
 
@@ -142,15 +144,15 @@ class QuizStart extends Component {
 
         <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
           <SubmitBtn
-            onPress={() => this.answerQuestion(questions, AnswerType.CORRECT)}
-            buttonName="Correct"
-            buttonStyle={styles.correctButton}
-            buttonTextStyle={styles.textButton}
-          />
-          <SubmitBtn
             onPress={() => this.answerQuestion(questions, AnswerType.INCORRECT)}
             buttonName="Incorrect"
             buttonStyle={styles.incorrectButton}
+            buttonTextStyle={styles.textButton}
+          />
+          <SubmitBtn
+            onPress={() => this.answerQuestion(questions, AnswerType.CORRECT)}
+            buttonName="Correct"
+            buttonStyle={styles.correctButton}
             buttonTextStyle={styles.textButton}
           />
         </View>
@@ -177,7 +179,7 @@ const styles = StyleSheet.create({
   },
   flipCard: {
     flex: 2,
-    backgroundColor: lightPurp,
+    backgroundColor: purple,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center",
@@ -185,7 +187,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width - 30,
   },
   flipCardBack: {
-    backgroundColor: pink,
+    backgroundColor: lightPurp,
     flex: 2,
     justifyContent: "center",
     alignItems: "center",
