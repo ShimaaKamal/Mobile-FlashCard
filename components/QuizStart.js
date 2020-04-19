@@ -30,10 +30,12 @@ class QuizStart extends Component {
       this.setState((prevState) => ({
         ...this.createStateObject(prevState, questions),
         remainingQuestionsNumber: prevState.remainingQuestionsNumber - 1,
-        answeredQuestions: AnswerType.CORRECT
-          ? prevState.answeredQuestions + 1
-          : prevState.answeredQuestions,
+        answeredQuestions:
+          answerType === AnswerType.CORRECT
+            ? prevState.answeredQuestions + 1
+            : prevState.answeredQuestions,
       }));
+      console.log(this.state.answeredQuestions);
     }
   };
 
@@ -64,7 +66,7 @@ class QuizStart extends Component {
       answer,
       nextQuestionId,
       remainingQuestionsNumber,
-      answerderQuestions,
+      answeredQuestions,
     } = this.state;
     const { questions } = this.props;
 
@@ -73,8 +75,8 @@ class QuizStart extends Component {
         <View style={styles.scoreContainer}>
           <Text style={styles.score}>Congratulations: You have finished</Text>
           <Text style={styles.score}>
-            Your score:{" "}
-            {((answerderQuestions / questions.length) * 100).toFixed(2)} %
+            Your score:
+            {((answeredQuestions / questions.length) * 100).toFixed(0)} %
           </Text>
         </View>
       );
