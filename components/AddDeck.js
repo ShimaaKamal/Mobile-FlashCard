@@ -21,11 +21,11 @@ function SubmitBtn({ onPress }) {
 
 class AddDeck extends Component {
   state = {
-    cardName: "",
+    deckName: "",
   };
 
   submit = () => {
-    const title = this.state.cardName;
+    const title = this.state.deckName;
     saveDeckTitle(title);
 
     this.props.dispatch(
@@ -35,10 +35,15 @@ class AddDeck extends Component {
         },
       })
     );
+
+    this.props.navigation.navigate("Deck View", { title });
+    this.setState(() => ({
+      deckName: "",
+    }));
   };
   setDeckValue = (text) => {
     this.setState(() => ({
-      cardName: text,
+      deckName: text,
     }));
   };
   render() {
@@ -50,7 +55,7 @@ class AddDeck extends Component {
           style={styles.inputText}
           underlineColorAndroid={gray}
           placeholder="Deck title"
-          value={this.state.cardName}
+          value={this.state.deckName}
           onChangeText={(text) => this.setDeckValue(text)}
         />
         <SubmitBtn onPress={this.submit} />

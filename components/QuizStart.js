@@ -21,14 +21,18 @@ class QuizStart extends Component {
     answeredQuestions: 0,
   };
 
+  //display next question when button is pressed
+  //clear local notification when user answer all questions
   answerQuestion = (questions, answerType) => {
     if (this.state.nextQuestionId === -1) {
+      clearLocalNotification().then(setLocalNotification());
+
       this.setState((prevState) => ({
+        remainingQuestionsNumber: prevState.remainingQuestionsNumber - 1,
         answeredQuestions:
           answerType === AnswerType.CORRECT
             ? prevState.answeredQuestions + 1
             : prevState.answeredQuestions,
-        remainingQuestionsNumber: prevState.remainingQuestionsNumber - 1,
       }));
     } else {
       this.setState((prevState) => ({
@@ -43,8 +47,7 @@ class QuizStart extends Component {
   };
 
   componentDidMount() {
-    clearLocalNotification().then(setLocalNotification());
-    this.updateStateWithQuestion();
+    this.initializeStateWithQuestion();
   }
 
   createStateObject = (prevState, questions) => ({
@@ -56,11 +59,15 @@ class QuizStart extends Component {
         : prevState.nextQuestionId + 1,
   });
 
-  updateStateWithQuestion = () => {
+  //display first question
+  initializeStateWithQuestion = () => {
     const questions = this.props.questions;
     this.setState((prevState) => ({
-      ...this.createStateObject(prevState, questions),
-      remainingQuestionsNumber: questions.length - 1,
+      question: questions[0].question,
+      answer: questions[0].answer,
+      nextQuestionId: prevState.nextQuestionId + 1,
+      answeredQuestions: 0,
+      remainingQuestionsNumber: questions.length,
     }));
   };
 
@@ -72,9 +79,10 @@ class QuizStart extends Component {
       remainingQuestionsNumber,
       answeredQuestions,
     } = this.state;
+
     const { questions } = this.props;
 
-    if (nextQuestionId === -1 && remainingQuestionsNumber === -1) {
+    if (nextQuestionId === -1 && remainingQuestionsNumber === 0) {
       return (
         <View style={styles.scoreContainer}>
           <Text style={styles.score}>Congratulations: You have finished</Text>
@@ -82,6 +90,18 @@ class QuizStart extends Component {
             Your score:
             {((answeredQuestions / questions.length) * 100).toFixed(0)} %
           </Text>
+
+          <SubmitBtn
+            onPress={() => this.initializeStateWithQuestion()}
+            buttonName="Restart"
+            buttonStyle={styles.restartButton}
+            buttonTextStyle={styles.textButton}
+          />
+          <TextButton
+            style={styles.backButton}
+            children="Back To Deck"
+            onPress={() => this.props.navigation.goBack()}
+          ></TextButton>
         </View>
       );
     }
@@ -89,7 +109,7 @@ class QuizStart extends Component {
     return (
       <View style={styles.container}>
         <Text style={styles.questionNumber}>
-          {remainingQuestionsNumber + 1} / {questions.length}
+          {remainingQuestionsNumber} / {questions.length}
         </Text>
         <CardFlip
           style={styles.cardContainer}
@@ -136,6 +156,7 @@ class QuizStart extends Component {
 function mapStateToProps(state, props) {
   const title = props.route.params.title;
   return {
+    title: title,
     questions: state[title].questions,
   };
 }
@@ -182,6 +203,24 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     margin: 12,
+  },
+  restartButton: {
+    backgroundColor: purple,
+    padding: 10,
+    paddingLeft: 30,
+    paddingRight: 30,
+    height: 45,
+    borderRadius: 2,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 12,
+  },
+
+  backButton: {
+    fontSize: 22,
+    alignSelf: "center",
+    fontWeight: "bold",
+    color: purple,
   },
   incorrectButton: {
     backgroundColor: "red",

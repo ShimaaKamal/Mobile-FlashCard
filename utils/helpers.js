@@ -14,7 +14,7 @@ export const AnswerType = {
 };
 
 export function clearLocalNotification() {
-  AsyncStorage.removeItem(NOTIFICATION_KEY).then(
+  return AsyncStorage.removeItem(NOTIFICATION_KEY).then(
     Notifications.cancelAllScheduledNotificationsAsync()
   );
 }

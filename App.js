@@ -16,7 +16,7 @@ import { setLocalNotification } from "./utils/helpers";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-function deckStack() {
+function DeckStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Decks" component={DecksList} />
@@ -27,6 +27,14 @@ function deckStack() {
       />
       <Stack.Screen name="Add Card" component={AddCard} />
       <Stack.Screen name="Quiz" component={QuizStart} />
+    </Stack.Navigator>
+  );
+}
+
+function AddDeckStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Add Deck" component={AddDeck} />
     </Stack.Navigator>
   );
 }
@@ -56,8 +64,8 @@ export default class App extends Component {
               },
             })}
           >
-            <Tab.Screen name="Decks" component={deckStack} />
-            <Tab.Screen name="Add Deck" component={AddDeck} />
+            <Tab.Screen name="Decks" component={DeckStack} />
+            <Tab.Screen name="Add Deck" component={AddDeckStack} />
           </Tab.Navigator>
         </NavigationContainer>
       </Provider>
