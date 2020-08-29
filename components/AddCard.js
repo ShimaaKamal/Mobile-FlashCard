@@ -92,3 +92,5 @@ const styles = StyleSheet.create({
   },
 });
 export default connect()(AddCard);
+
+//add new comment
